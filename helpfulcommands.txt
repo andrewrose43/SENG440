@@ -1,0 +1,27 @@
+
+//To render a .c...
+arm-linux-gcc -S addition.c
+arm-linux-gcc addition.s
+
+//Uploading executables and running them...
+ssh andrewrose@seng440.ece.uvic.ca
+lftp user2@arm
+//password: DSB-C118
+put a.out
+bye
+telnet arm
+//Now we must log into FriendlyARM
+FriendlyARM login: user2
+Password: DSB-C118
+//You can now interact with the filesystem as you would a regular Linux machine via Bash
+//the lftp interface is NOT the Bash interface! So only stay in lftp to put stuff in the real ARM machine!
+chmod +x a.out
+./a.out
+//To exit FriendlyARM:
+exit
+
+//To exit lftp
+bye
+
+//To gain information about a file:
+file asdf.flp
