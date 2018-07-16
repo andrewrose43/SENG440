@@ -2,4 +2,6 @@
 *.exe
 *.class
 *.o
+
 output.txt
+tmp.txt

@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <math.h>
+#include <stdlib.h>
 
 //Derived from Mihai Sima's "Lesson 101: CORDIC" slideshow
 //Copyright 2017 Mihai Sima
@@ -38,13 +39,13 @@ void verify(int x_i_init, int y_i_init, int z_i_init,
 }
 
 
-void main(void){
+void main(int argc, char *args[]){
 	int x_i_init, y_i_init, z_i_init; //initial values
 	int x_i, y_i, z_i; //integer (fixed-point) variables
 
-	x_i = (x_i_init = 27852);
-	y_i = (y_i_init = 24903);
-	z_i_init = 23906;
+	x_i = (x_i_init = atoi(args[1]));
+	y_i = (y_i_init = atoi(args[2]));
+	z_i_init = atoi(args[3]);
 
 	printf("Vectoring CORDIC:\n\n");
 	cordic_V_fixed_point(&x_i, &y_i, &z_i);
