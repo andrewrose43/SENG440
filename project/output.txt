@@ -2,3 +2,4 @@ TESTBENCH OUTPUT
 x_d = 0.850000			x_i = 27852
 y_d = 0.760000			y_i = 24903
 z_d = 0.729556			z_i = 23906
+Note: the testbench's "[xyz]_i" values become the CORDIC main's "[xyz]_i_init" values.
