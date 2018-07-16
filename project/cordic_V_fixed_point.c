@@ -1,4 +1,6 @@
 
+//Derived from Mihai Sima's "Lesson 101: CORDIC" slideshow
+//Copyright 2017 Mihai Sima
 
 int z_table[15];
 
