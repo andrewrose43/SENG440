@@ -7,8 +7,8 @@ int z_table[15];
 void cordic_V_fixed_point(int *x, int *y, int *z){
 
 	//SETUP
-	int x_tmp_1, y_tmp_1, z_tmp;
-	int x_tmp_2, y_tmp_2;
+	register int x_tmp_1, y_tmp_1, z_tmp;
+	register int x_tmp_2, y_tmp_2;
 	register int i;
 	
 	x_tmp_1 = *x;
@@ -37,7 +37,7 @@ void cordic_V_fixed_point(int *x, int *y, int *z){
 }
 
 /* Opportunities for optimization:
- * -Have we enough registers to store ALL the temporary variables?
+ * DONE - Have we enough registers to store ALL the temporary variables?
  * -Would it be possible to replace the if instruction with a predicate?
  * -The z table obviously requires memory access; perhaps do this in advance of the if
  *  	-And/or in advance of the i<15 loop

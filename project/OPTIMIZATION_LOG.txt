@@ -1,0 +1,1 @@
+1. Stored all temporary variables (x_tmp_1, y_tmp_1, z_tmp, x_tmp_2, y_tmp_2, i) in registers
