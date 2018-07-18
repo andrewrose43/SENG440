@@ -1,1 +1,6 @@
 1. Stored all temporary variables (x_tmp_1, y_tmp_1, z_tmp, x_tmp_2, y_tmp_2, i) in registers
+2. Got rid of the superfluous y_tmp_2 variable; y_tmp_1 was then renamed y_tmp
+	-this saves one assignment per loop iteration
+3. Now compiled with -O3 to see what the product is and what optimizations were made automatically. The slides already indicate that -O3 can unroll/graft loops and employ predicate operations so it's worth just looking to see if that is auto-done for me before I go nuts with crazy optimization techniques.
+	-at this stage, I'll want to include both a copy of the C at this stage AND a copy of the Assembly, fully-commented!
+	-be sure to explain why I'm stopping here in grand detail

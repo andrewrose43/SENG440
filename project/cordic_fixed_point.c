@@ -39,7 +39,7 @@ void verify(int x_i_init, int y_i_init, int z_i_init,
 }
 
 
-void main(int argc, char *args[]){
+int main(int argc, char *args[]){
 	int x_i_init, y_i_init, z_i_init; //initial values
 	int x_i, y_i, z_i; //integer (fixed-point) variables
 
