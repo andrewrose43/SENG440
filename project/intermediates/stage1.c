@@ -8,7 +8,7 @@ int z_table[15];
 void cordic_V_fixed_point(int *x, int *y, int *z){
 
 	//SETUP
-	//note that all these variables are not register ints
+	//note that all these variables are now register ints
 	//ARM has more than enough registers to do this
 	//also, y_tmp_2 is gone; it could be removed without causing any problems
 	//lines that formerly made assignments to y_tmp_2 now make assignments to y_tmp
