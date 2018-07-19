@@ -4,3 +4,15 @@
 3. Now compiled with -O3 to see what the product is and what optimizations were made automatically. The slides already indicate that -O3 can unroll/graft loops and employ predicate operations so it's worth just looking to see if that is auto-done for me before I go nuts with crazy optimization techniques.
 	-at this stage, I'll want to include both a copy of the C at this stage AND a copy of the Assembly, fully-commented!
 	-be sure to explain why I'm stopping here in grand detail
+
+Note that my registerizations and removal of y_tmp_2 appeared to do nothing at all??
+	-but no reason to undo my changes. The registerization will only ever do good, and the y_tmp_2 deletion makes the code simpler and easier to understand
+
+Also note that all the comments were lifted from Sima's slides, to my surprise, because my initial tweaks did nothing that -O3 would not do itself
+
+Also note that I've marked duplicate/redundant instructions with [DUPLICATE]
+
+And be sure to delete stuff starting a while after the comments end, but restore the view for the closing...
+
+FIXABLE-IN-ASSEMBLY STUFF FROM STAGE 1 that won't be fixed until after the final render of the last C-level optimization
+-The ldrle/ldrgt redundancy that happens 15 times

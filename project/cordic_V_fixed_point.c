@@ -1,4 +1,3 @@
-
 //Derived from Mihai Sima's "Lesson 101: CORDIC" slideshow
 //Copyright 2017 Mihai Sima
 
