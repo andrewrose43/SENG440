@@ -26,7 +26,7 @@ cordic_V_fixed_point:
 	ldrle	r2, .L33		@load z_table pointer into r2 if y<=0 [DUPLICATE]
 	ldr	ip, [r0, #0]		@r0 is &x; load x into ip (r12)
 	ldrle	r3, [r2, #0]		@load z_table[0] into r2 if y<=0
-	ldrgt	r2, .L33		@load z_table[0] into r3 if y>0 [DUPLICATE]
+	ldrgt	r2, .L33		@load z_table[0] into r2 if y>0 [DUPLICATE]
 	mov	r5, r0			@r0 is &x; save &x in r5
 	@Note: in future iterations of the loop, the next two instructions shift right the
 	@contents of r1. No shift is required on the first iteration
@@ -44,12 +44,17 @@ cordic_V_fixed_point:
 	cmp	r0, #0			@compare y with 0
 	ldrle	r3, [r2, #4]		@load z_table[1] into r3 if y<=0 [DUPLICATE]
 	ldrgt	r3, [r2, #4]		@load z_table[1] into r3 if y<=0 [DUPLICATE]
-	addle	ip, r0, r1, asr #1
-	subgt	ip, r0, r1, asr #1
-	rsble	r4, r3, r4
-	addgt	r4, r4, r3
-	suble	r0, r1, r0, asr #1
-	addgt	r0, r1, r0, asr #1
+	addle	ip, r0, r1, asr #1	@ip (new y) = y + x >> 1 if y<=0
+	subgt	ip, r0, r1, asr #1	@ip (new y) = y - x >> 1 if y>0
+	rsble	r4, r3, r4		@r4 (new z) = z - z_table[1] if y<=0
+	addgt	r4, r4, r3		@r4 (new z) = z + z_table[1] if y>0
+	suble	r0, r1, r0, asr #1	@r0 (new x) = x - y >> 1 if y<=0
+	addgt	r0, r1, r0, asr #1	@r0 (new x) = x + y >> 1 if y>0
+	@The next iteration begins here, and so on.
+	@On each iteration:
+	@	-the right shifts grow by one
+	@	-the address loaded from for z_table grows by 4 bytes (1 word)
+	@	-r0 and r1 swap positions, since they alternate storing x and y
 	cmp	ip, #0
 	ldrle	r3, [r2, #8]
 	ldrgt	r3, [r2, #8]
@@ -167,11 +172,12 @@ cordic_V_fixed_point:
 	addgt	ip, r1, ip, asr #14
 	rsble	r3, r3, r4
 	suble	ip, r1, ip, asr #14
-	str	ip, [r5, #0]
-	str	r2, [r6, #0]
-	str	r3, [r7, #0]
-	ldmfd	sp!, {r4, r5, r6, r7}
-	bx	lr
+	@And now, the components of the new vector are stored in memory.
+	str	ip, [r5, #0]@\		@store x in memory
+	str	r2, [r6, #0]		@store y in memory
+	str	r3, [r7, #0]		@store z in memory
+	ldmfd	sp!, {r4, r5, r6, r7}	@pop registers from stack
+	bx	lr			@return to calling routine
 .L34:
 	.align	2
 .L33:
