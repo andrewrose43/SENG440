@@ -43,8 +43,7 @@ void cordic_V_fixed_point(int *x, int *y, int *z){
  * DONE - Would it be possible to replace the if instruction with a predicate? -O3???
  * DONE -The z table obviously requires memory access; perhaps do this in advance of the if
  *  	-And/or in advance of the i<15 loop
- * -Load values for next iteration of loop while still in previous iteration
- * -Replace the current z_tmp load with z_table[i+1]
- *  	-You'll need a dummy/zero element in z_table to avoid pointer error
+ * DONE - Replace the current z_tmp load with z_table[i+1]
+ *  	DONE - You'll need a dummy/zero element in z_table to avoid pointer error
  * -Any other ideas?
  */
