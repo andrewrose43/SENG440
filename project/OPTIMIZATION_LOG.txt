@@ -14,5 +14,13 @@ Also note that I've marked duplicate/redundant instructions with [DUPLICATE]
 
 And be sure to delete stuff starting a while after the comments end, but restore the view for the closing...
 
+Also: be sure to mention and look into the possibility of instruction cache misses
+
 FIXABLE-IN-ASSEMBLY STUFF FROM STAGE 1 that won't be fixed until after the final render of the last C-level optimization
 -The ldrle/ldrgt redundancy that happens 15 times
+
+
+STAGE 2
+Currently working on the z_table load and getting that to happen ahead of the if statement
+1. Loaded the z_table values into REGISTER int before the if statement
+
