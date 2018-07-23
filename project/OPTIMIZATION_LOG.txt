@@ -24,3 +24,8 @@ STAGE 2
 Currently working on the z_table load and getting that to happen ahead of the if statement
 1. Loaded the z_table values into REGISTER int before the if statement
 
+TO DO IN STAGE 3
+
+At beginning, load z into r6 instead of r1. This way, you can skip the mov r6, r1 command that protects &y from being overwritten and just leave &y in r1.
+
+mov r5, r0 ...r5 is never referenced again until the very end, when it is used to store back to &x. Could save this instruction by simply having future r0 operations use r5 instead?
