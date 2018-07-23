@@ -28,8 +28,8 @@ void cordic_V_fixed_point(int *x, int *y, int *z){
 			y_tmp = y_tmp + (x_tmp_1 >> i);
 			z_tmp -= z_table_tmp;
 		}
-		z_table_tmp = z_table[i]; //Load the value from memory ahead of when it is needed
 		x_tmp_1 = x_tmp_2;
+		z_table_tmp = z_table[i+1]; //Load the value from memory ahead of when it is needed
 	}
 	*x = x_tmp_1;
 	*y = y_tmp;
@@ -46,4 +46,5 @@ void cordic_V_fixed_point(int *x, int *y, int *z){
  * DONE - Replace the current z_tmp load with z_table[i+1]
  *  	DONE - You'll need a dummy/zero element in z_table to avoid pointer error
  * -Any other ideas?
+ * -Load two z_table values at once in a single int and bitwise them apart to make two values?
  */
