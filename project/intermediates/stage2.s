@@ -22,33 +22,43 @@ cordic_V_fixed_point:
 	stmfd	sp!, {r4, r5, r6, r7}	@push registers to stack
 	ldr	r4, .L33		@load z_table pointer into r4
 	ldr	r3, [r0, #0]		@r0 is &x; load x into r3
-	cmp	ip, #0			@compare y with 0
+	cmp	ip, #0			@compare y_tmp with 0
 	mov	r6, r1			@r1 is &y; save &y into r6
 	ldr	r1, [r4, #0]		@load z_table[0] into r1
 	mov	r7, r2			@r2 is &z; save &z in r7
-	addle	r2, r3, ip		@r2 is new y_tmp; x_tmp_2 = x_tmp_1+y_tmp if y_tmp <= 0
-	rsbgt	r2, r3, ip		@r2 is new y_tmp; x_tmp_2 = x_tmp_1-y_tmp if y_tmp > 0
-	rsble	ip, ip, r3		@ip becomes x_tmp_2; x_tmp_2 = x_tmp_1-y_tmp if y_tmp<=0
-	addgt	ip, r3, ip		@ip becomes x_tmp_2; x_tmp_2 = x_tmp_1-y_tmp if y_tmp>0
+	addle	r2, r3, ip		@r2 is new y_tmp; y_tmp = y_tmp+x_tmp_1 if y_tmp<=0
+	rsbgt	r2, r3, ip		@r2 is new y_tmp; y_tmp = y_tmp-x_tmp_1 if y_tmp>0
+	rsble	ip, ip, r3		@ip becomes x_tmp_2; x_tmp_2 = x_tmp_1-old y_tmp if old y_tmp<=0
+	addgt	ip, r3, ip		@ip becomes x_tmp_2; x_tmp_2 = x_tmp_1+old y_tmp if old y_tmp>0
 	mov	r5, r0			@save &x in r5
-	rsble	r0, r1, #0		@if 
-	movgt	r0, r1
-	cmp	r2, #0
-	ldr	r1, [r4, #4]
-	addle	r3, r2, ip, asr #1
-	subgt	r3, r2, ip, asr #1
-	suble	r2, ip, r2, asr #1
-	addgt	r2, ip, r2, asr #1
-	rsble	r0, r1, r0
-	addgt	r0, r0, r1
-	cmp	r3, #0
-	ldr	r1, [r4, #8]
-	addle	ip, r3, r2, asr #2
-	subgt	ip, r3, r2, asr #2
-	suble	r2, r2, r3, asr #2
-	addgt	r2, r2, r3, asr #2
-	rsble	r0, r1, r0
-	addgt	r0, r0, r1
+	rsble	r0, r1, #0		@z_tmp -= z_table[0] if y_tmp <= 0
+	movgt	r0, r1			@z_tmp = z_table[0] if y_tmp > 0
+	cmp	r2, #0			@compare y_tmp with 0
+	ldr	r1, [r4, #4]		@load z_table[1] into r1
+	@At this point in stage2.c, x_tmp_2 is assigned to z_tmp_1
+	@The compiler doesn't bother with this and instead just reuses the ip register
+	@which was set to x_tmp_2 in the previous loop iteration
+	@wherever x_tmp_1 appeared in the C code.
+	@So I'll refer to ip as if it were x_tmp_1 now to be consistent with the C.
+	addle	r3, r2, ip, asr #1	@r3 is new y_tmp; y_tmp = y_tmp+(x_tmp_1>>1) if y_tmp<=0
+	subgt	r3, r2, ip, asr #1	@r3 is new y_tmp; y_tmp = y_tmp-(x_tmp_1>>1) if y_tmp>0
+	suble	r2, ip, r2, asr #1	@r2 becomes x_tmp_2; x_tmp_2 = x_tmp_1-(old y_tmp>>1) if old y_tmp<=0
+	addgt	r2, ip, r2, asr #1	@r2 becomes x_tmp_2; x_tmp_2 = x_tmp_1-(old y_tmp>>1) if old y_tmp>0
+	rsble	r0, r1, r0		@subtract z_table[1] from z_tmp if old y_tmp<=0
+	addgt	r0, r0, r1		@add z_table[1] to z_tmp if old y_tmp>0
+	cmp	r3, #0			@compare y_tmp with 0
+	ldr	r1, [r4, #8]		@load z_table[2] into r1
+	addle	ip, r3, r2, asr #2	@ip is new y_tmp; y_tmp = y_tmp+(x_tmp_1>>2) if y_tmp<=0
+	subgt	ip, r3, r2, asr #2	@ip is new y_tmp; y_tmp = y_tmp-(x_tmp_1>>2) if y_tmp>0
+	suble	r2, r2, r3, asr #2	@r2 becomes x_tmp_2; x_tmp_2 = x_tmp_1-(old y_tmp>>2) if old y_tmp<=0
+	addgt	r2, r2, r3, asr #2	@r2 becomes x_tmp_2; x_tmp_2 = x_tmp_1+(old y_tmp>>2) if old y_tmp>0
+	rsble	r0, r1, r0		@subtract z_table[2] from z_tmp if old y_tmp<=0
+	addgt	r0, r0, r1		@add z_table[2] to z_tmp if old y_tmp>0
+	@The next iteration begins here, and so on.
+	@On each iteration:
+	@	-the right shifts grow by one
+	@	-the address loaded from for z_table grows by 4 bytes (1 word)
+	@	-the r3 and ip registers swap positions
 	cmp	ip, #0
 	ldr	r1, [r4, #12]
 	addle	r3, ip, r2, asr #3
@@ -145,11 +155,12 @@ cordic_V_fixed_point:
 	addgt	r3, ip, r3, asr #14
 	rsble	r2, r2, r1
 	suble	r3, ip, r3, asr #14
-	str	r3, [r5, #0]
-	str	r0, [r6, #0]
-	str	r2, [r7, #0]
-	ldmfd	sp!, {r4, r5, r6, r7}
-	bx	lr
+	@And now, the components of the new vector are stored in memory
+	str	r3, [r5, #0] 		@store x in memory
+	str	r0, [r6, #0]		@store y in memory
+	str	r2, [r7, #0]		@store z in memory
+	ldmfd	sp!, {r4, r5, r6, r7}	@pop registers from stack
+	bx	lr			@return to calling routine
 .L34:
 	.align	2
 .L33:
