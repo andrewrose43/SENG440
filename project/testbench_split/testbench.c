@@ -29,7 +29,7 @@ int main(int argc, char *argv[]){
 	//atan returns a value in radians
 	z_d = atan(y_d/x_d);
 
-	//convert everything to 16-bit ints
+	//convert everything to 32-bit ints
 	x_i = x_d * (1<<15);
 	y_i = y_d * (1<<15);
 	z_i = z_d * (1<<15);
